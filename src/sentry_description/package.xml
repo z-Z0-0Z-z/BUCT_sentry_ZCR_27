@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!--
+  文件来源：本项目编写，遵循 ROS 2 官方 package.xml 格式。
+  文件作用：仿真/真机共用的机器人描述包。
+            只包含 URDF、meshes、RViz 配置，不包含 Gazebo、场地、驱动。
+-->
+<package format="3">
+    <name>sentry_description</name>
+    <version>1.0.0</version>
+    <description>哨兵公用描述包，无驱动、场地、Gazebo</description>
+    <maintainer email="2024030291@buct.edu.en">Chenrui_Zhang</maintainer>
+    <license>MIT</license>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

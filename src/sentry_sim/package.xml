@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+    <name>sentry_sim</name>
+    <version>1.0.0</version>
+    <description>Gazebo仿真包，包含哨兵机器人、RMUL场地、Gazebo插件、仿真启动文件</description>
+    <maintainer email="2024030291@buct.edu.cn">Chenrui_Zhang</maintainer>
+    <license>BSD</license>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+      <!-- 共用描述、接口、导航和工具 -->
+    <exec_depend>sentry_description</exec_depend>
+    <exec_depend>sentry_interfaces</exec_depend>
+    <exec_depend>sentry_interfaces</exec_depend>
+    
+    <!-- ROS 2 基础 -->
+    <exec_depend>robot_state_publisher</exec_depend>
+    <exec_depend>xacro</exec_depend>
+    <exec_depend>rviz2</exec_depend>
+    <exec_depend>ros2launch</exec_depend>
+
+    <!-- Gazebo Classic -->
+    <exec_depend>gazebo_ros</exec_depend>
+    <exec_depend>gazebo_plugins</exec_depend>
+
+    <!-- Python 节点 -->
+    <exec_depend>rclpy</exec_depend>
+    <exec_depend>trajectory_msgs</exec_depend>
+    <exec_depend>tf2_ros</exec_depend>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

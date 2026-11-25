@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  文件来源：
+    机械最新版“简化哨兵”SolidWorks 导出的 urdf/简化哨兵n.urdf
+    （原导出包 src/简化哨兵 保持不动）。
+
+  本包内做的修改：
+    1) 包名从“简化哨兵n”改为 sentry_description（ROS 2 包名不允许中文）；
+    2) 9 处 package://sentry_description/meshes/... 改为 package://sentry_description/meshes/...；
+    3) robot name 从“简化哨兵n”改为 sentry。
+
+  文件作用：
+    定义机器人本体：base_link、bigyaw、smallyaw、pitch、mid360s
+    以及它们之间的关节。仿真和真机共用本文件。
+-->
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: v1.0.4-1-gcaeea21-dirty  Build Version: 1.6.9673.41765
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="sentry">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-1.11022302462516E-16 -2.77555756156289E-17 0.0434999999999999"
+        rpy="0 0 0" />
+      <mass
+        value="19.5620542005291" />
+      <inertia
+        ixx="0.387671663651331"
+        ixy="-4.26741975090295E-16"
+        ixz="2.77555756156289E-17"
+        iyy="0.387671663651331"
+        iyz="4.85722573273506E-17"
+        izz="0.750665795928695" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/base_link.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.894117647058823 0.894117647058823 0.894117647058823 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="bigyaw">
+    <inertial>
+      <origin
+        xyz="0.000740282934113268 0.0667201498395401 0.0781036958352669"
+        rpy="0 0 0" />
+      <mass
+        value="9.67901647691126" />
+      <inertia
+        ixx="0.0658136196335952"
+        ixy="0.000721400355513355"
+        ixz="0.000260533901439711"
+        iyy="0.12661267634346"
+        iyz="-0.0131221679424373"
+        izz="0.157537153266302" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/bigyaw.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.894117647058823 0.894117647058823 0.894117647058823 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/bigyaw.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="bigyawjoint"
+    type="continuous">
+    <origin
+      xyz="-0.000174973309990556 0.000492753222278597 0.0870000000000005"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="bigyaw" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="smallyaw">
+    <inertial>
+      <origin
+        xyz="0.0162620655048447 0.00637706710934038 0.0311806723219554"
+        rpy="0 0 0" />
+      <mass
+        value="0.170174314096154" />
+      <inertia
+        ixx="0.000135775964839869"
+        ixy="1.10916821567037E-05"
+        ixz="-2.99514639213887E-05"
+        iyy="0.000111840762173559"
+        iyz="-1.17452789372161E-05"
+        izz="0.000100472056948531" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/smallyaw.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.894117647058823 0.894117647058823 0.894117647058823 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/smallyaw.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="smallyawjoint"
+    type="continuous">
+    <origin
+      xyz="0.0363551504920111 -0.0867101038713564 0.0545000000000001"
+      rpy="0 0 0" />
+    <parent
+      link="bigyaw" />
+    <child
+      link="smallyaw" />
+    <axis
+      xyz="0 0 1" />
+  </joint>
+  <link
+    name="pitch">
+    <inertial>
+      <origin
+        xyz="-0.0946655308815364 -0.00686071379102354 -0.00828242898202924"
+        rpy="0 0 0" />
+      <mass
+        value="0.958663231827962" />
+      <inertia
+        ixx="0.0009499799124394"
+        ixy="-0.000336574127272818"
+        ixz="-0.000375310712438417"
+        iyy="0.00473114659154439"
+        iyz="-4.52622082812189E-05"
+        izz="0.00519614994737073" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/pitch.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.894117647058823 0.894117647058823 0.894117647058823 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/pitch.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint
+    name="pitchjoint"
+    type="continuous">
+    <origin
+      xyz="0.0279293205699065 0.0109523080902308 0.0550000000000007"
+      rpy="0 0 0" />
+    <parent
+      link="smallyaw" />
+    <child
+      link="pitch" />
+    <axis
+      xyz="-0.365076936341036 0.930977352330251 0" />
+  </joint>
+  <link
+    name="mid360s">
+    <inertial>
+      <origin
+        xyz="0.0371283596459978 0.0786285783519492 -0.03826982258467"
+        rpy="0 0 0" />
+      <mass
+        value="19.6703869949592" />
+      <inertia
+        ixx="0.373145236947502"
+        ixy="-0.00243367847175276"
+        ixz="0.00128117328729743"
+        iyy="0.384272216793095"
+        iyz="-0.0186509806087059"
+        izz="0.555697724083733" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://sentry_description/meshes/mid360s.STL" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <!--雷达的碰撞体不能加，加了射线全打在自己身上了-->
+  </link>
+  <joint
+    name="mid360sjoint"
+    type="fixed">
+    <origin
+      xyz="-0.0381448495079917 -0.0667101038713516 0.0574970999999996"
+      rpy="0 0 0" />
+    <parent
+      link="bigyaw" />
+    <child
+      link="mid360s" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>

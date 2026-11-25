@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<sdf version="1.7">
+    <world name="rmul_27">
+        <!-- ==============================================================
+        物理引擎
+        来源：Gazebo Classic 官方 ODE 物理引擎配置 + SDF 1.7 <physics> 规范。
+        两个参数必须配平，仿真速度 = max_step_size × real_time_update_rate：
+          * max_step_size      每个物理步推进多少"仿真秒"；
+          * real_time_update_rate  每秒执行多少个物理步。
+        只写 max_step_size 会踩坑：real_time_update_rate 缺省是 **1000**，
+        于是 0.02 × 1000 = 每秒前进 20 仿真秒 —— gz stats 里 Factor 就是 20，
+        表现为车快 20 倍、"走一下就到墙"。
+        配平后：0.002 × 500 = 1.0，现实 1 秒 = 仿真 1 秒。
+        =============================================================== -->
+        <physics type="ode">
+        <!--物理仿真的最大时间步长为2ms(500HZ)，保证云台和雷达射线稳定-->
+        <max_step_size>0.002</max_step_size>
+        <!--每秒执行500个物理步：必须和上面的步长配平（500 × 0.002 = 1.0 倍速）-->
+        <real_time_update_rate>500</real_time_update_rate>
+        <!--目标加速比，1.0 = 实时；这是"期望值"，真正限速靠上面两项配平-->
+        <real_time_factor>1.0</real_time_factor>
+        </physics>
+        <!--模拟地球重力-->
+        <gravity>0 0 -9.81</gravity>
+        <!-- ==============================================================
+         环境光与背景
+         来源：Courage 地图包世界文件的同名配置（改为 Gazebo 11 可读的 SDF 1.7）。
+         ============================================================== -->
+        <scene>
+            <!--RGBA亮度70%的灰色不透明-->
+            <ambient>0.7 0.7 0.7 1</ambient>
+            <!--RGBA深灰偏蓝的天、背景色-->
+            <background>0.16 0.17 0.19 1</background>
+            <!--不渲染阴影-->
+            <shadows>false</shadows>
+        </scene>
+        <!--引入阳光-->
+        <include>
+            <uri>model://sun</uri>
+        </include>
+        <!--引入RMUL场地-->
+        <include>
+            <uri>model://rmul_2027</uri>
+            <pose>0 0 0 0 0 0</pose>
+        </include>
+    </world>
+</sdf>

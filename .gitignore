@@ -1,0 +1,10 @@
+build/
+install/
+log/
+.venv/
+__pycache__/
+*.pyc
+*.bag
+*.db3
+.vscode/
+/src/简化哨兵

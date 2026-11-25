@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<!--
+  文件来源：本项目自定义消息包，遵循 ROS 2 官方 package.xml 格式。
+  文件作用：定义仿真/真机共用的云台指令消息。
+-->
+<package format="3">
+    <name>sentry_interfaces</name>
+    <version>1.0.0</version>
+    <description>哨兵消息接口包</description>
+    <maintainer email="2024030291@buct.edu.en">Chenrui_Zhang</maintainer>
+    <license>BSD</license>
+
+    <buildtool_depend>ament_cmake</buildtool_depend>
+
+    <!-- 编译这个包时，需要 rosidl 的“代码生成器”来帮忙：
+        把你写的 .msg / .srv / .action 文件翻译成 C++、Python 等代码。
+        通俗说：盖房子时请“翻译官/加工厂”，只在编译阶段需要。 -->
+    <build_depend>rosidl_default_generators</build_depend>
+
+    <!-- 程序运行起来后，需要 rosidl 的“运行时底座”：
+        消息的类型支持、序列化/反序列化等都靠它。
+        通俗说：房子盖好后要有水电，运行时需要它。 -->
+    <exec_depend>rosidl_default_runtime</exec_depend>
+
+    <!-- 把自己登记进 rosidl_default_generators 这个“生成器小组”：
+        告诉构建系统“我是代码生成流水线上的一个工位”，
+        让 colcon/ament 按生成器规则排好构建顺序。 -->
+    <member_of_group>rosidl_default_generators</member_of_group>
+
+    <!-- 最关键的一行：声明“我是一个接口包/接口工厂”。
+        告诉整个 ROS 2 生态：这个包里放的是消息、服务、动作定义，
+        构建时要走接口生成流程，下游包和 ros2 interface 工具也要能识别它。
+        通俗说：挂牌“本店专门生产接口”，不是普通功能包。 -->
+    <member_of_group>rosidl_interface_packages</member_of_group>
+
+    <export>
+        <build_type>ament_cmake</build_type>
+    </export>
+</package>

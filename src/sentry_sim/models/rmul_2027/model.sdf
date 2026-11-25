@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  文件来源：
+    Courage 战队开源的 RMUL2027_map_transfer_20261016_STEP_R1 地图包，
+    几何来自 RoboMaster 官方 RMUL2027_3V3_V1.0.0.stp。
+
+  本包内做的修改：
+    SDF 版本号从 1.9 降为 1.7，以适配 Gazebo Classic 11。
+
+  文件作用：
+    把整块 2027 3V3 场地作为一个 static 模型加载；
+    collision 和 visual 共用同一个 DAE 网格；
+    纹理路径为 ../materials/textures/official_top.png。
+-->
+<sdf version="1.7">
+  <model name="rmul_2027">
+    <static>true</static>
+    <link name="arena">
+      <collision name="official_step_collision">
+        <geometry>
+          <mesh>
+            <uri>model://rmul_2027/meshes/step_textured.dae</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <friction>
+            <ode>
+              <mu>.8</mu>
+              <mu2>.8</mu2>
+            </ode>
+          </friction>
+        </surface>
+      </collision>
+      <visual name="official_step_visual">
+        <geometry>
+          <mesh>
+            <uri>model://rmul_2027/meshes/step_textured.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+  </model>
+</sdf>
