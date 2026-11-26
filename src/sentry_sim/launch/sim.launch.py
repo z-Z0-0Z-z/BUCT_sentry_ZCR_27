@@ -19,7 +19,7 @@
 
 import os
 import xacro
-from ament_index_python.packages import get_package_share_directory
+from ament_index_python.packages import get_package_share_directory,get_package_prefix #`libros2_livox.so` 装在`install/ros2_livox_simulation/lib/` ，这个目录不在 Gazebo 默认搜索路径里。不加这一步，Gazebo 启动时会报找不到插件，或者传感器静默不工作。
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, TimerAction, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -69,6 +69,17 @@ def generate_launch_description():
     gazebo_model_path = os.pathsep.join(
         [p for p in (models_path, '/usr/share/gazebo-11/models', existing_model_path) if p]
     )
+        # =========================================================================
+    # 4.1 Gazebo 插件搜索路径
+    # 来源：Gazebo 11 的 GAZEBO_PLUGIN_PATH 环境变量
+    # 作用：libros2_livox.so 装在 install/ros2_livox_simulation/lib 下，
+    #       不把该目录加进来，Gazebo 加载传感器插件时会失败。
+    # =========================================================================
+    livox_prefix = get_package_prefix('ros2_livox_simulation')
+    existing_plugin_path = os.environ.get('GAZEBO_PLUGIN_PATH', '')
+    gazebo_plugin_path = os.pathsep.join(
+        [p for p in (os.path.join(livox_prefix, 'lib'), existing_plugin_path) if p]
+    )
     # =========================================================================
     # 5. Gazebo
     # =========================================================================
@@ -113,6 +124,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         SetEnvironmentVariable('GAZEBO_MODEL_PATH', gazebo_model_path),
+        SetEnvironmentVariable('GAZEBO_PLUGIN_PATH', gazebo_plugin_path),
         robot_state_publisher,
         gazebo,
         TimerAction(period=2.0,actions=[spawn_entity]),#延时2秒后生成机器人

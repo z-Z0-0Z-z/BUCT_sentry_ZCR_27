@@ -17,6 +17,98 @@
     <gazebo reference="smallyaw"><gravity>false</gravity></gazebo>
     <gazebo reference="pitch"><gravity>false</gravity></gazebo>
     <gazebo reference="mid360s"><gravity>false</gravity></gazebo>
+
+    <!-- =========================================================================
+        Mid-360 雷达 + IMU 传感器（只在仿真里挂，真机 URDF 不动）
+        来源：
+          - 打点插件：ros2_livox_simulation 的 libros2_livox.so
+          - 扫描轨迹：ros2_livox_simulation/scan_mode/mid360.csv（MID-360 非重复扫描）
+          - IMU 插件：ROS 2 Humble 官方 gazebo_plugins 的 gazebo_ros_imu_sensor
+        发布：
+          /livox/lidar             livox_ros_driver2/msg/CustomMsg
+          /livox/lidar/pointcloud  sensor_msgs/msg/PointCloud2
+          /livox/imu               sensor_msgs/msg/Imu
+        要点：
+          - sensor 的 name 必须叫 mid360s，插件拿它当点云的 frame_id
+          - <ray><scan> 里的角度和 samples 不决定激光方向，只填一个没人订阅的
+            Gazebo LaserScanStamped 元数据；真正的方向来自 CSV
+          - 每帧射线数 = <samples> / <downsample>，这是唯一的性能旋钮
+        ========================================================================= -->
+    <gazebo reference="mid360s">
+      <sensor type="ray" name="mid360s">
+        <pose>0 0 0 0 0 0</pose>
+        <!-- 不写 always_on 的话，没有订阅者时 Gazebo 不更新传感器，
+            表现为话题存在但一条消息都没有 -->
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        #更新频率
+        <update_rate>10</update_rate>
+
+        <plugin name="livox_points_plugin" filename="libros2_livox.so">
+          <ray>
+            <scan>
+              <horizontal>
+                <samples>100</samples>
+                <resolution>1</resolution>
+                <min_angle>0</min_angle>
+                <max_angle>6.283185307</max_angle>
+              </horizontal>
+              <vertical>
+                <samples>360</samples>
+                <resolution>1</resolution>
+                <!-- 这里写的是 CSV 实际覆盖的 -7.21° ~ +52.16°，仅元数据 -->
+                <min_angle>-0.1259</min_angle>
+                <max_angle>0.9104</max_angle>
+              </vertical>
+            </scan>
+            <range>
+              <min>0.1</min>
+              <max>200.0</max>
+              <resolution>0.002</resolution>
+            </range>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.002</stddev>
+            </noise>
+          </ray>
+
+          <!-- 每帧 10000 条射线（你旧项目实测：3 万条时约 4Hz，1 万条能跟上 10Hz） -->
+          <samples>10000</samples>
+          <downsample>1</downsample>
+
+          <csv_file_name>$(find ros2_livox_simulation)/scan_mode/mid360.csv</csv_file_name>
+
+          <!-- CustomMsg 话题；PointCloud2 由插件自动发到 <topic>/pointcloud -->
+          <topic>/livox/lidar</topic>
+        </plugin>
+      </sensor>
+
+      <sensor type="imu" name="mid360s_imu">
+        <always_on>true</always_on>
+        <update_rate>200</update_rate>
+        <imu>
+          <angular_velocity>
+            <x><noise type="gaussian"><mean>0.0</mean><stddev>0.0002</stddev></noise></x>
+            <y><noise type="gaussian"><mean>0.0</mean><stddev>0.0002</stddev></noise></y>
+            <z><noise type="gaussian"><mean>0.0</mean><stddev>0.0002</stddev></noise></z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x><noise type="gaussian"><mean>0.0</mean><stddev>0.0017</stddev></noise></x>
+            <y><noise type="gaussian"><mean>0.0</mean><stddev>0.0017</stddev></noise></y>
+            <z><noise type="gaussian"><mean>0.0</mean><stddev>0.0017</stddev></noise></z>
+          </linear_acceleration>
+        </imu>
+        <plugin name="mid360s_imu_plugin" filename="libgazebo_ros_imu_sensor.so">
+          <ros>
+            <namespace>/</namespace>
+            <remapping>~/out:=livox/imu</remapping>
+          </ros>
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+        </plugin>
+      </sensor>
+    </gazebo>
+
     <!-- =========================================================================
        5. 模型级 Gazebo 插件（必须放在文件最末尾）
        来源：
