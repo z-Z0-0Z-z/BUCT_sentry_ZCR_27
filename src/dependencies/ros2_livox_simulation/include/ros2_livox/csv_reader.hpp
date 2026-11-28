@@ -22,10 +22,9 @@ public:
         {
             std::string header;
             std::getline(file_stream, header, '\n');
-            while (!file_stream.eof())
+            std::string line_str;
+            while (std::getline(file_stream, line_str))
             {
-                std::string line_str;
-                std::getline(file_stream, line_str, '\n');
                 std::stringstream line_stream;
                 line_stream << line_str;
                 std::vector<double> data;

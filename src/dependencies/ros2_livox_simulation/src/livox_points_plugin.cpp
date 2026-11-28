@@ -1,3 +1,5 @@
+#include <gazebo_ros/conversions/builtin_interfaces.hpp>
+
 #include <rclcpp/rclcpp.hpp>
 #include <gazebo_ros/node.hpp>
 #include <rclcpp/logging.hpp>
@@ -134,27 +136,40 @@ namespace gazebo
         std::vector<std::pair<int, AviaRotateInfo>> points_pair;
         // Initialize ray scan point pairs
         InitializeRays(points_pair, rayShape);
-        rayShape->Update();
+        // 2026-11-27改，在物理更新锁内采样，并记录这一物理步的仿真时间。
+        // 来源：参照项目同名文件；Gazebo Classic 官方 ray plugin 的线程安全写法。
+        common::Time scan_time;
+        {
+            boost::recursive_mutex::scoped_lock lock(*world->Physics()->GetPhysicsUpdateMutex());
+            rayShape->Update();
+            scan_time = world->SimTime();
+        }
 
         // Create laser scan message and set the timestamp
-        msgs::Set(laserMsg.mutable_time(), world->SimTime());
+        msgs::Set(laserMsg.mutable_time(), scan_time);
+
         msgs::LaserScan *scan = laserMsg.mutable_scan();
         InitializeScan(scan);
 
-        // Create a custom message pp_livox for publishing Livox CustomMsg type messages
         livox_ros_driver2::msg::CustomMsg pp_livox;
-        pp_livox.header.stamp = node_->get_clock()->now();
+        // 2026-11-27必须用 Gazebo 仿真时间，不能用 node 的 ROS 时钟。
+        // 原因：FAST-LIO 用 header.stamp 在 IMU 队列里找对应时间段；
+        //       墙钟时间和 /clock 不在同一时间基，LIO 会找不到 IMU，点云被丢弃。
+        pp_livox.header.stamp = gazebo_ros::Convert<builtin_interfaces::msg::Time>(scan_time);
         pp_livox.header.frame_id = raySensor->Name();
+        // timebase 与真机 livox_ros_driver2 驱动保持一致：这一帧的起始时间（纳秒）。
+        pp_livox.timebase = rclcpp::Time(pp_livox.header.stamp).nanoseconds();
         int count = 0;
-        boost::chrono::high_resolution_clock::time_point start_time = boost::chrono::high_resolution_clock::now();
+
 
         // For publishing PointCloud2 type messages
         // 说明（2026-11-25）：上游原实现把每个点 emplace_back 两次，
         // 导致 PointCloud2 点数是 CustomMsg 的两倍；这里改为循环前一次性分配，
         // 每个点只写一次，并去掉 sensor_msgs/PointCloud 中转。
         sensor_msgs::msg::PointCloud2 cloud2;
-        cloud2.header.stamp = node_->get_clock()->now();
-        cloud2.header.frame_id = raySensor->Name();
+        // 与 CustomMsg 共用同一个时间戳和 frame_id，避免两种消息时间不一致。
+        cloud2.header = pp_livox.header;
+
         sensor_msgs::PointCloud2Modifier modifier(cloud2);
         modifier.setPointCloud2FieldsByString(1, "xyz");
         modifier.resize(points_pair.size());
@@ -200,10 +215,11 @@ namespace gazebo
             ++out_y;
             ++out_z;
 
-            // Calculate timestamp offset
-            boost::chrono::high_resolution_clock::time_point end_time = boost::chrono::high_resolution_clock::now();
-            boost::chrono::nanoseconds elapsed_time = boost::chrono::duration_cast<boost::chrono::nanoseconds>(end_time - start_time);
-            p.offset_time = elapsed_time.count();
+            // 说明（2026-11-27）：仿真里一帧的所有射线在同一个物理步采样，
+            // 逐点时间偏移恒为 0。原来用 CPU 处理耗时冒充 offset_time，
+            // 数值不可复现，FAST-LIO 去畸变会把点云反向拧歪。
+            p.offset_time = 0;
+
 
             // Add point cloud data to the CustomMsg message
             pp_livox.points.push_back(p);
