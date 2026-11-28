@@ -8,5 +8,3 @@ __pycache__/
 *.db3
 .vscode/
 /src/简化哨兵
-/src/dependencies/livox_ros_driver2
-/src/references
